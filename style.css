@@ -1,0 +1,35 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+    font-family: 'Arial', sans-serif;
+}
+
+.container {
+    text-align: center;
+}
+
+h1 {
+    font-size: 3rem;
+    color: #fff;
+}
+
+canvas {
+    background-color: #333;
+    border: 5px solid #fff;
+    border-radius: 10px;
+}
+
+p#score {
+    margin-top: 20px;
+    font-size: 1.5rem;
+    color: #fff;
+}
