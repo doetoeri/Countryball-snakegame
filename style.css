@@ -24,8 +24,8 @@ h1 {
 
 canvas {
     background-color: #333;
-    border: 5px solid #fff;
-    border-radius: 10px;
+    border: 10px solid #fff;  /* 벽을 테두리로 시각화 */
+    border-radius: 10px;  /* 둥근 테두리 */
 }
 
 p#score {
