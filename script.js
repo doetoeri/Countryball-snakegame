@@ -50,11 +50,20 @@ function gameLoop() {
     
     // 화면 그리기
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "lime";
-    snake.forEach(segment => ctx.fillRect(segment.x, segment.y, boxSize, boxSize));
     
+    // 뱀 그리기 (둥근 형태)
+    ctx.fillStyle = "lime";
+    snake.forEach(segment => {
+        ctx.beginPath();
+        ctx.arc(segment.x + boxSize / 2, segment.y + boxSize / 2, boxSize / 2, 0, 2 * Math.PI);
+        ctx.fill();
+    });
+    
+    // 먹이 그리기 (원형)
     ctx.fillStyle = "red";
-    ctx.fillRect(food.x, food.y, boxSize, boxSize);
+    ctx.beginPath();
+    ctx.arc(food.x + boxSize / 2, food.y + boxSize / 2, boxSize / 2, 0, 2 * Math.PI);
+    ctx.fill();
 }
 
 // 게임 시작
