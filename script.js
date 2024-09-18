@@ -1,11 +1,13 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const boxSize = 20;
-let snake = [{ x: 160, y: 160 }];  // 초기 뱀의 위치
+let snake = [{ x: 160, y: 160 }, { x: 140, y: 160 }, { x: 120, y: 160 }];  // 뱀의 초기 길이
 let food = { x: Math.floor(Math.random() * 20) * boxSize, y: Math.floor(Math.random() * 20) * boxSize };
 let direction = { x: boxSize, y: 0 };  // 오른쪽으로 이동 시작
 let score = 0;
 let gameRunning = true;
+let snakeHeadImg = new Image();
+snakeHeadImg.src = 'head.png';  // 뱀의 머리 이미지
 
 // 방향 전환
 document.addEventListener("keydown", changeDirection);
@@ -51,19 +53,21 @@ function gameLoop() {
     // 화면 그리기
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // 뱀 그리기 (둥근 형태)
-    ctx.fillStyle = "lime";
-    snake.forEach(segment => {
-        ctx.beginPath();
-        ctx.arc(segment.x + boxSize / 2, segment.y + boxSize / 2, boxSize / 2, 0, 2 * Math.PI);
-        ctx.fill();
+    // 뱀 그리기
+    snake.forEach((segment, index) => {
+        if (index === 0) {
+            // 뱀의 머리
+            ctx.drawImage(snakeHeadImg, segment.x, segment.y, boxSize, boxSize);
+        } else {
+            // 뱀의 몸통 (#D52A1E)
+            ctx.fillStyle = "#D52A1E";
+            ctx.fillRect(segment.x, segment.y, boxSize, boxSize);
+        }
     });
     
-    // 먹이 그리기 (원형)
-    ctx.fillStyle = "red";
-    ctx.beginPath();
-    ctx.arc(food.x + boxSize / 2, food.y + boxSize / 2, boxSize / 2, 0, 2 * Math.PI);
-    ctx.fill();
+    // 먹이 그리기 (초록색)
+    ctx.fillStyle = "#00FF00";
+    ctx.fillRect(food.x, food.y, boxSize, boxSize);
 }
 
 // 게임 시작
