@@ -69,6 +69,16 @@ function changeDirection(event) {
     }
 }
 
+// 그리드 라인 그리기
+function drawGrid() {
+    ctx.strokeStyle = "rgba(200, 200, 200, 0.5)";  // 회색 그리드 라인
+    for (let x = 0; x < canvas.width; x += boxSize) {
+        for (let y = 0; y < canvas.height; y += boxSize) {
+            ctx.strokeRect(x, y, boxSize, boxSize);
+        }
+    }
+}
+
 // 게임 루프
 function gameLoop() {
     if (!gameRunning) return;
@@ -97,8 +107,11 @@ function gameLoop() {
     
     // 화면 그리기
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // 그리드 그리기
+    drawGrid();
     
-    // 뱀 그리기 (긴 캡슐 모양)
+    // 뱀 그리기 (네모 모양)
     snake.forEach((segment, index) => {
         if (index === 0) {
             // 뱀의 머리 이미지 회전 처리
@@ -108,19 +121,15 @@ function gameLoop() {
             ctx.drawImage(snakeHeadImg, -boxSize / 2, -boxSize / 2, boxSize, boxSize);  // 이미지 그리기
             ctx.restore();
         } else {
-            // 뱀의 몸통 (#D52A1E)
+            // 뱀의 몸통 (#D52A1E, 네모)
             ctx.fillStyle = "#D52A1E";
-            ctx.beginPath();
-            ctx.arc(segment.x + boxSize / 2, segment.y + boxSize / 2, boxSize / 2, 0, 2 * Math.PI);
-            ctx.fill();
+            ctx.fillRect(segment.x, segment.y, boxSize, boxSize);
         }
     });
     
-    // 먹이 그리기 (초록색)
+    // 먹이 그리기 (초록색, 네모)
     ctx.fillStyle = "#00FF00";
-    ctx.beginPath();
-    ctx.arc(food.x + boxSize / 2, food.y + boxSize / 2, boxSize / 2, 0, 2 * Math.PI);
-    ctx.fill();
+    ctx.fillRect(food.x, food.y, boxSize, boxSize);
 }
 
 // 게임 시작
