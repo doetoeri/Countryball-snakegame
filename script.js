@@ -8,19 +8,64 @@ let score = 0;
 let gameRunning = true;
 let snakeHeadImg = new Image();
 snakeHeadImg.src = 'head.png';  // 뱀의 머리 이미지
+let currentAngle = 0;  // 뱀 머리 회전 각도
 
 // 방향 전환
 document.addEventListener("keydown", changeDirection);
 
+// 터치 이벤트 처리 (모바일 지원)
+canvas.addEventListener("touchstart", handleTouchStart);
+canvas.addEventListener("touchmove", handleTouchMove);
+
+let touchStartX = 0;
+let touchStartY = 0;
+
+function handleTouchStart(event) {
+    const touch = event.touches[0];
+    touchStartX = touch.clientX;
+    touchStartY = touch.clientY;
+}
+
+function handleTouchMove(event) {
+    if (!gameRunning) return;
+    
+    const touch = event.touches[0];
+    const dx = touch.clientX - touchStartX;
+    const dy = touch.clientY - touchStartY;
+
+    if (Math.abs(dx) > Math.abs(dy)) {
+        if (dx > 0 && direction.x === 0) {
+            direction = { x: boxSize, y: 0 };  // 오른쪽
+            currentAngle = 90;
+        } else if (dx < 0 && direction.x === 0) {
+            direction = { x: -boxSize, y: 0 };  // 왼쪽
+            currentAngle = -90;
+        }
+    } else {
+        if (dy > 0 && direction.y === 0) {
+            direction = { x: 0, y: boxSize };  // 아래
+            currentAngle = 180;
+        } else if (dy < 0 && direction.y === 0) {
+            direction = { x: 0, y: -boxSize };  // 위
+            currentAngle = 0;
+        }
+    }
+}
+
+// 방향 전환 처리 (키보드 입력)
 function changeDirection(event) {
     if (event.key === "ArrowUp" && direction.y === 0) {
-        direction = { x: 0, y: -boxSize };
+        direction = { x: 0, y: -boxSize };  // 위로
+        currentAngle = 0;
     } else if (event.key === "ArrowDown" && direction.y === 0) {
-        direction = { x: 0, y: boxSize };
+        direction = { x: 0, y: boxSize };  // 아래로
+        currentAngle = 180;
     } else if (event.key === "ArrowLeft" && direction.x === 0) {
-        direction = { x: -boxSize, y: 0 };
+        direction = { x: -boxSize, y: 0 };  // 왼쪽으로
+        currentAngle = -90;
     } else if (event.key === "ArrowRight" && direction.x === 0) {
-        direction = { x: boxSize, y: 0 };
+        direction = { x: boxSize, y: 0 };  // 오른쪽으로
+        currentAngle = 90;
     }
 }
 
@@ -53,21 +98,29 @@ function gameLoop() {
     // 화면 그리기
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // 뱀 그리기
+    // 뱀 그리기 (긴 캡슐 모양)
     snake.forEach((segment, index) => {
         if (index === 0) {
-            // 뱀의 머리
-            ctx.drawImage(snakeHeadImg, segment.x, segment.y, boxSize, boxSize);
+            // 뱀의 머리 이미지 회전 처리
+            ctx.save();
+            ctx.translate(segment.x + boxSize / 2, segment.y + boxSize / 2);  // 중심으로 이동
+            ctx.rotate((currentAngle * Math.PI) / 180);  // 각도에 따라 회전
+            ctx.drawImage(snakeHeadImg, -boxSize / 2, -boxSize / 2, boxSize, boxSize);  // 이미지 그리기
+            ctx.restore();
         } else {
             // 뱀의 몸통 (#D52A1E)
             ctx.fillStyle = "#D52A1E";
-            ctx.fillRect(segment.x, segment.y, boxSize, boxSize);
+            ctx.beginPath();
+            ctx.arc(segment.x + boxSize / 2, segment.y + boxSize / 2, boxSize / 2, 0, 2 * Math.PI);
+            ctx.fill();
         }
     });
     
     // 먹이 그리기 (초록색)
     ctx.fillStyle = "#00FF00";
-    ctx.fillRect(food.x, food.y, boxSize, boxSize);
+    ctx.beginPath();
+    ctx.arc(food.x + boxSize / 2, food.y + boxSize / 2, boxSize / 2, 0, 2 * Math.PI);
+    ctx.fill();
 }
 
 // 게임 시작
