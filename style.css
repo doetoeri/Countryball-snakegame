@@ -23,8 +23,8 @@ h1 {
 }
 
 canvas {
-    background-color: #000;  /* 벽을 검정색으로 */
-    border: 10px solid #000;  /* 검정색 테두리 */
+    background-color: #000;  /* 검정색 벽 */
+    border: 10px solid #000;  /* 벽을 강조 */
     border-radius: 10px;  /* 둥근 모서리 */
 }
 
