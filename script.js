@@ -6,9 +6,15 @@ let food = { x: Math.floor(Math.random() * 20) * boxSize, y: Math.floor(Math.ran
 let direction = { x: boxSize, y: 0 };  // 오른쪽으로 이동 시작
 let score = 0;
 let gameRunning = true;
+
+// 뱀 머리와 꼬리 이미지 로드
 let snakeHeadImg = new Image();
 snakeHeadImg.src = 'head.png';  // 뱀의 머리 이미지
+let snakeTailImg = new Image();
+snakeTailImg.src = 'tail.png';  // 뱀의 꼬리 이미지
+
 let currentAngle = 0;  // 뱀 머리 회전 각도
+let tailAngle = 0;  // 뱀 꼬리 회전 각도
 
 // 방향 전환
 document.addEventListener("keydown", changeDirection);
@@ -118,7 +124,21 @@ function gameLoop() {
             ctx.save();
             ctx.translate(segment.x + boxSize / 2, segment.y + boxSize / 2);  // 중심으로 이동
             ctx.rotate((currentAngle * Math.PI) / 180);  // 각도에 따라 회전
-            ctx.drawImage(snakeHeadImg, -boxSize / 2, -boxSize / 2, boxSize, boxSize);  // 이미지 그리기
+            ctx.drawImage(snakeHeadImg, -boxSize / 2, -boxSize / 2, boxSize, boxSize);  // 머리 이미지 그리기
+            ctx.restore();
+        } else if (index === snake.length - 1) {
+            // 뱀의 꼬리 이미지 회전 처리
+            let tail = snake[snake.length - 2];
+            let tailDirection = { x: segment.x - tail.x, y: segment.y - tail.y };
+            if (tailDirection.x > 0) tailAngle = 90;
+            else if (tailDirection.x < 0) tailAngle = -90;
+            else if (tailDirection.y > 0) tailAngle = 180;
+            else if (tailDirection.y < 0) tailAngle = 0;
+
+            ctx.save();
+            ctx.translate(segment.x + boxSize / 2, segment.y + boxSize / 2);  // 꼬리의 중심으로 이동
+            ctx.rotate((tailAngle * Math.PI) / 180);  // 각도에 따라 회전
+            ctx.drawImage(snakeTailImg, -boxSize / 2, -boxSize / 2, boxSize, boxSize);  // 꼬리 이미지 그리기
             ctx.restore();
         } else {
             // 뱀의 몸통 (#D52A1E, 네모)
