@@ -7,11 +7,13 @@ let direction = { x: boxSize, y: 0 };  // 오른쪽으로 이동 시작
 let score = 0;
 let gameRunning = true;
 
-// 뱀 머리와 꼬리 이미지 로드
+// 이미지 로드
 let snakeHeadImg = new Image();
 snakeHeadImg.src = 'head.png';  // 뱀의 머리 이미지
 let snakeTailImg = new Image();
 snakeTailImg.src = 'tail.png';  // 뱀의 꼬리 이미지
+let snakeMiddleImg = new Image();
+snakeMiddleImg.src = 'middle.png';  // 뱀의 중간 세그먼트 이미지
 
 let currentAngle = 0;  // 뱀 머리 회전 각도
 let tailAngle = 0;  // 뱀 꼬리 회전 각도
@@ -58,33 +60,6 @@ function handleTouchMove(event) {
     }
 }
 
-// 방향 전환 처리 (키보드 입력)
-function changeDirection(event) {
-    if (event.key === "ArrowUp" && direction.y === 0) {
-        direction = { x: 0, y: -boxSize };  // 위로
-        currentAngle = 0;
-    } else if (event.key === "ArrowDown" && direction.y === 0) {
-        direction = { x: 0, y: boxSize };  // 아래로
-        currentAngle = 180;
-    } else if (event.key === "ArrowLeft" && direction.x === 0) {
-        direction = { x: -boxSize, y: 0 };  // 왼쪽으로
-        currentAngle = -90;
-    } else if (event.key === "ArrowRight" && direction.x === 0) {
-        direction = { x: boxSize, y: 0 };  // 오른쪽으로
-        currentAngle = 90;
-    }
-}
-
-// 그리드 라인 그리기
-function drawGrid() {
-    ctx.strokeStyle = "rgba(200, 200, 200, 0.5)";  // 회색 그리드 라인
-    for (let x = 0; x < canvas.width; x += boxSize) {
-        for (let y = 0; y < canvas.height; y += boxSize) {
-            ctx.strokeRect(x, y, boxSize, boxSize);
-        }
-    }
-}
-
 // 게임 루프
 function gameLoop() {
     if (!gameRunning) return;
@@ -113,11 +88,8 @@ function gameLoop() {
     
     // 화면 그리기
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // 그리드 그리기
-    drawGrid();
     
-    // 뱀 그리기 (네모 모양)
+    // 뱀 그리기
     snake.forEach((segment, index) => {
         if (index === 0) {
             // 뱀의 머리 이미지 회전 처리
@@ -141,9 +113,16 @@ function gameLoop() {
             ctx.drawImage(snakeTailImg, -boxSize / 2, -boxSize / 2, boxSize, boxSize);  // 꼬리 이미지 그리기
             ctx.restore();
         } else {
-            // 뱀의 몸통 (#D52A1E, 네모)
-            ctx.fillStyle = "#D52A1E";
-            ctx.fillRect(segment.x, segment.y, boxSize, boxSize);
+            // 중간 세그먼트 그리기
+            ctx.save();
+            ctx.translate(segment.x + boxSize / 2, segment.y + boxSize / 2);
+            ctx.drawImage(snakeMiddleImg, -boxSize / 2, -boxSize / 2, boxSize, boxSize);  // 중간 세그먼트 이미지
+            ctx.restore();
+            
+            // 검정 테두리 추가
+            ctx.strokeStyle = "black";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(segment.x, segment.y, boxSize, boxSize);
         }
     });
     
