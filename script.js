@@ -10,10 +10,8 @@ let direction = { x: boxSize, y: 0 };
 let score = 0;
 let gameRunning = true;
 let snakeHeadImg = new Image();
-let snakeTailImg = new Image();
 snakeHeadImg.src = 'head.png';
-snakeTailImg.src = 'tail.png';
-let currentAngle = 90;
+const snakeColor = "#D52A1E";  // 뱀 색상
 
 const gameSpeed = 100;
 
@@ -40,18 +38,14 @@ function handleTouchMove(event) {
     if (Math.abs(dx) > Math.abs(dy)) {
         if (dx > 0 && direction.x === 0) {
             direction = { x: boxSize, y: 0 };
-            currentAngle = 90;
         } else if (dx < 0 && direction.x === 0) {
             direction = { x: -boxSize, y: 0 };
-            currentAngle = -90;
         }
     } else {
         if (dy > 0 && direction.y === 0) {
             direction = { x: 0, y: boxSize };
-            currentAngle = 180;
         } else if (dy < 0 && direction.y === 0) {
             direction = { x: 0, y: -boxSize };
-            currentAngle = 0;
         }
     }
 
@@ -68,16 +62,12 @@ function changeDirection(event) {
 
     if (keyPressed === 'ArrowUp' && !goingDown) {
         direction = { x: 0, y: -boxSize };
-        currentAngle = 0;
     } else if (keyPressed === 'ArrowDown' && !goingUp) {
         direction = { x: 0, y: boxSize };
-        currentAngle = 180;
     } else if (keyPressed === 'ArrowLeft' && !goingRight) {
         direction = { x: -boxSize, y: 0 };
-        currentAngle = -90;
     } else if (keyPressed === 'ArrowRight' && !goingLeft) {
         direction = { x: boxSize, y: 0 };
-        currentAngle = 90;
     }
 }
 
@@ -129,25 +119,26 @@ function gameLoop() {
             if (index === 0) {
                 ctx.save();
                 ctx.translate(segment.x + boxSize / 2, segment.y + boxSize / 2);
-                ctx.rotate((currentAngle * Math.PI) / 180);
                 ctx.drawImage(snakeHeadImg, -boxSize / 2, -boxSize / 2, boxSize, boxSize);
                 ctx.restore();
             } else {
-                ctx.fillStyle = "#D52A1E";
+                ctx.fillStyle = snakeColor;
                 ctx.fillRect(segment.x, segment.y, boxSize, boxSize);
             }
         });
 
-        // 뱀의 꼬리 그리기
+        // 뱀의 꼬리 그리기 (대문자 'D' 모양)
         const tailSegment = snake[snake.length - 1];
         const prevSegment = snake[snake.length - 2];
         const tailDirection = { x: prevSegment.x - tailSegment.x, y: prevSegment.y - tailSegment.y };
-        const tailAngle = Math.atan2(tailDirection.y, tailDirection.x) * (180 / Math.PI);
-        ctx.save();
-        ctx.translate(tailSegment.x + boxSize / 2, tailSegment.y + boxSize / 2);
-        ctx.rotate(tailAngle * (Math.PI / 180));
-        ctx.drawImage(snakeTailImg, -boxSize / 2, -boxSize / 2, boxSize, boxSize);
-        ctx.restore();
+        
+        ctx.fillStyle = snakeColor;
+        ctx.beginPath();
+        ctx.moveTo(tailSegment.x + boxSize, tailSegment.y);
+        ctx.arc(tailSegment.x + boxSize, tailSegment.y + boxSize / 2, boxSize / 2, -Math.PI / 2, Math.PI / 2, false);
+        ctx.lineTo(tailSegment.x, tailSegment.y + boxSize);
+        ctx.lineTo(tailSegment.x, tailSegment.y);
+        ctx.fill();
 
         ctx.fillStyle = "#00FF00";
         ctx.fillRect(food.x, food.y, boxSize, boxSize);
