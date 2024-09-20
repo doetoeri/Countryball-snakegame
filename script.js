@@ -2,12 +2,17 @@ const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const boxSize = 20;
 let snake = [{ x: 160, y: 160 }, { x: 140, y: 160 }, { x: 120, y: 160 }];
-let food = { x: Math.floor(Math.random() * (canvas.width / boxSize)) * boxSize, y: Math.floor(Math.random() * (canvas.height / boxSize)) * boxSize };
+let food = {
+    x: Math.floor(Math.random() * (canvas.width / boxSize)) * boxSize,
+    y: Math.floor(Math.random() * (canvas.height / boxSize)) * boxSize
+};
 let direction = { x: boxSize, y: 0 };
 let score = 0;
 let gameRunning = true;
 let snakeHeadImg = new Image();
+let snakeTailImg = new Image();
 snakeHeadImg.src = 'head.png';
+snakeTailImg.src = 'tail.png';
 let currentAngle = 90;
 
 const gameSpeed = 100;
@@ -91,13 +96,11 @@ function gameLoop() {
     setTimeout(function onTick() {
         const newHead = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
 
-        // 벽에 닿으면 반대편으로 이동
         if (newHead.x < 0) newHead.x = canvas.width - boxSize;
         else if (newHead.x >= canvas.width) newHead.x = 0;
         if (newHead.y < 0) newHead.y = canvas.height - boxSize;
         else if (newHead.y >= canvas.height) newHead.y = 0;
 
-        // 자기 자신과 충돌하면 게임 오버
         if (snake.some(segment => segment.x === newHead.x && segment.y === newHead.y)) {
             gameRunning = false;
             alert("Game Over! Your Score: " + score);
@@ -121,6 +124,7 @@ function gameLoop() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawGrid();
 
+        // 뱀의 머리 그리기
         snake.forEach((segment, index) => {
             if (index === 0) {
                 ctx.save();
@@ -133,6 +137,15 @@ function gameLoop() {
                 ctx.fillRect(segment.x, segment.y, boxSize, boxSize);
             }
         });
+
+        // 뱀의 꼬리 그리기
+        const tailSegment = snake[snake.length - 1];
+        const tailAngle = Math.atan2(direction.y, direction.x) * (180 / Math.PI);
+        ctx.save();
+        ctx.translate(tailSegment.x + boxSize / 2, tailSegment.y + boxSize / 2);
+        ctx.rotate(tailAngle * (Math.PI / 180));
+        ctx.drawImage(snakeTailImg, -boxSize / 2, -boxSize / 2, boxSize, boxSize);
+        ctx.restore();
 
         ctx.fillStyle = "#00FF00";
         ctx.fillRect(food.x, food.y, boxSize, boxSize);
