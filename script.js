@@ -133,27 +133,22 @@ function gameLoop() {
         const tailSegment = snake[snake.length - 1];
         const prevSegment = snake[snake.length - 2];
         const tailDirection = { x: prevSegment.x - tailSegment.x, y: prevSegment.y - tailSegment.y };
+        const tailAngle = Math.atan2(tailDirection.y, tailDirection.x) - Math.PI;  // 180도 회전
 
         ctx.fillStyle = snakeColor;
         ctx.beginPath();
-
-        if (tailDirection.x === boxSize && tailDirection.y === 0) { // 오른쪽
-            ctx.moveTo(tailSegment.x + boxSize, tailSegment.y);
-            ctx.arc(tailSegment.x + boxSize, tailSegment.y + boxSize / 2, boxSize / 2, -Math.PI / 2, Math.PI / 2, false);
-        } else if (tailDirection.x === -boxSize && tailDirection.y === 0) { // 왼쪽
-            ctx.moveTo(tailSegment.x, tailSegment.y);
-            ctx.arc(tailSegment.x, tailSegment.y + boxSize / 2, boxSize / 2, Math.PI / 2, -Math.PI / 2, true);
-        } else if (tailDirection.x === 0 && tailDirection.y === boxSize) { // 아래쪽
-            ctx.moveTo(tailSegment.x, tailSegment.y + boxSize);
-            ctx.arc(tailSegment.x + boxSize / 2, tailSegment.y + boxSize, boxSize / 2, Math.PI, 0, false);
-        } else if (tailDirection.x === 0 && tailDirection.y === -boxSize) { // 위쪽
-            ctx.moveTo(tailSegment.x, tailSegment.y);
-            ctx.arc(tailSegment.x + boxSize / 2, tailSegment.y, boxSize / 2, 0, Math.PI, false);
-        }
-
-        ctx.lineTo(tailSegment.x + boxSize, tailSegment.y + boxSize);
+        ctx.moveTo(tailSegment.x + boxSize, tailSegment.y);
+        ctx.arc(tailSegment.x + boxSize, tailSegment.y + boxSize / 2, boxSize / 2, -Math.PI / 2, Math.PI / 2, false);
         ctx.lineTo(tailSegment.x, tailSegment.y + boxSize);
+        ctx.lineTo(tailSegment.x, tailSegment.y);
         ctx.fill();
+
+        // 꼬리 회전 적용
+        ctx.save();
+        ctx.translate(tailSegment.x + boxSize / 2, tailSegment.y + boxSize / 2);
+        ctx.rotate(tailAngle);
+        ctx.fill();
+        ctx.restore();
 
         ctx.fillStyle = "#00FF00";
         ctx.fillRect(food.x, food.y, boxSize, boxSize);
