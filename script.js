@@ -140,7 +140,9 @@ function gameLoop() {
 
         // 뱀의 꼬리 그리기
         const tailSegment = snake[snake.length - 1];
-        const tailAngle = Math.atan2(direction.y, direction.x) * (180 / Math.PI);
+        const prevSegment = snake[snake.length - 2];
+        const tailDirection = { x: prevSegment.x - tailSegment.x, y: prevSegment.y - tailSegment.y };
+        const tailAngle = Math.atan2(tailDirection.y, tailDirection.x) * (180 / Math.PI);
         ctx.save();
         ctx.translate(tailSegment.x + boxSize / 2, tailSegment.y + boxSize / 2);
         ctx.rotate(tailAngle * (Math.PI / 180));
