@@ -132,7 +132,7 @@ function gameLoop() {
         // 그리드 그리기
         drawGrid();
 
-        // 뱀 그리기 (네모 모양)
+        // 뱀 그리기 (네모 모양, 검정색 아웃라인)
         snake.forEach((segment, index) => {
             if (index === 0) {
                 // 뱀의 머리 이미지 회전 처리
@@ -142,21 +142,10 @@ function gameLoop() {
                 ctx.drawImage(snakeHeadImg, -boxSize / 2, -boxSize / 2, boxSize, boxSize);  // 이미지 그리기
                 ctx.restore();
             } else {
-                // 뱀의 몸통 (#D52A1E, 네모)
+                // 뱀의 몸통 (#D52A1E, 네모, 검정색 테두리)
                 ctx.fillStyle = "#D52A1E";
                 ctx.fillRect(segment.x, segment.y, boxSize, boxSize);
+                ctx.strokeStyle = "#000000";  // 검정색 아웃라인
+                ctx.lineWidth = 3;  // 굵은 아웃라인
+                ctx.strokeRect(segment.x, segment.y, boxSize, boxSize);
             }
-        });
-
-        // 먹이 그리기 (초록색, 네모)
-        ctx.fillStyle = "#00FF00";
-        ctx.fillRect(food.x, food.y, boxSize, boxSize);
-
-        // 다음 프레임 실행
-        gameLoop();
-
-    }, gameSpeed);
-}
-
-// 게임 시작
-gameLoop();
