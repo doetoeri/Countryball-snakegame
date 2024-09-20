@@ -119,6 +119,8 @@ function gameLoop() {
             if (index === 0) {
                 ctx.save();
                 ctx.translate(segment.x + boxSize / 2, segment.y + boxSize / 2);
+                const headAngle = Math.atan2(direction.y, direction.x);
+                ctx.rotate(headAngle);
                 ctx.drawImage(snakeHeadImg, -boxSize / 2, -boxSize / 2, boxSize, boxSize);
                 ctx.restore();
             } else {
@@ -131,7 +133,8 @@ function gameLoop() {
         const tailSegment = snake[snake.length - 1];
         const prevSegment = snake[snake.length - 2];
         const tailDirection = { x: prevSegment.x - tailSegment.x, y: prevSegment.y - tailSegment.y };
-        
+        const tailAngle = Math.atan2(tailDirection.y, tailDirection.x);
+
         ctx.fillStyle = snakeColor;
         ctx.beginPath();
         ctx.moveTo(tailSegment.x + boxSize, tailSegment.y);
@@ -139,6 +142,13 @@ function gameLoop() {
         ctx.lineTo(tailSegment.x, tailSegment.y + boxSize);
         ctx.lineTo(tailSegment.x, tailSegment.y);
         ctx.fill();
+
+        // 꼬리를 회전시킴
+        ctx.save();
+        ctx.translate(tailSegment.x + boxSize / 2, tailSegment.y + boxSize / 2);
+        ctx.rotate(tailAngle);
+        ctx.fill();
+        ctx.restore();
 
         ctx.fillStyle = "#00FF00";
         ctx.fillRect(food.x, food.y, boxSize, boxSize);
