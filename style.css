@@ -9,7 +9,7 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+    background-color: #f0f0f0;
     font-family: 'Arial', sans-serif;
 }
 
@@ -18,18 +18,16 @@ body {
 }
 
 h1 {
-    font-size: 3rem;
-    color: #fff;
+    margin-bottom: 20px;
 }
 
-canvas {
-    background-color: #000;  /* 검정색 벽 */
-    border: 10px solid #000;  /* 벽을 강조 */
-    border-radius: 10px;  /* 둥근 모서리 */
+#gameCanvas {
+    background-color: #fafafa;
+    border: 2px solid black;
 }
 
-p#score {
+#score {
     margin-top: 20px;
-    font-size: 1.5rem;
-    color: #fff;
+    font-size: 20px;
+    color: #333;
 }
