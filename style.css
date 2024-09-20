@@ -1,10 +1,3 @@
-@font-face {
-    font-family: 'HSSanTokki20-Regular';
-    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2405@1.0/HSSanTokki20-Regular.woff2') format('woff2');
-    font-weight: normal;
-    font-style: normal;
-}
-
 * {
     margin: 0;
     padding: 0;
@@ -16,27 +9,21 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: black;
-    font-family: 'HSSanTokki20-Regular', sans-serif;
+    background-color: #f0f0f0;
+    font-family: 'Arial', sans-serif;
 }
 
 .container {
     text-align: center;
-    color: white;
 }
 
 h1 {
-    margin-bottom: 10px;
-    font-size: 36px;
-}
-
-h2 {
     margin-bottom: 20px;
-    font-size: 18px;
 }
 
 #gameCanvas {
-    background-color: black;
+    background-color: #fafafa;
+    border: 2px solid black;
     display: block;
     margin: 0 auto;
 }
@@ -44,5 +31,5 @@ h2 {
 #score {
     margin-top: 20px;
     font-size: 20px;
-    color: white;
+    color: #333;
 }
