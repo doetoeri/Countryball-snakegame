@@ -133,7 +133,7 @@ function gameLoop() {
         const tailSegment = snake[snake.length - 1];
         const prevSegment = snake[snake.length - 2];
         const tailDirection = { x: prevSegment.x - tailSegment.x, y: prevSegment.y - tailSegment.y };
-        const tailAngle = Math.atan2(tailDirection.y, tailDirection.x);  // 머리와 동일한 각도
+        const tailAngle = Math.atan2(tailDirection.y, tailDirection.x) - Math.PI;  // 180도 회전
 
         ctx.fillStyle = snakeColor;
         ctx.beginPath();
