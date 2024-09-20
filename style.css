@@ -24,6 +24,8 @@ h1 {
 #gameCanvas {
     background-color: #fafafa;
     border: 2px solid black;
+    display: block;
+    margin: 0 auto;
 }
 
 #score {
