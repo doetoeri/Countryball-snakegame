@@ -7,10 +7,11 @@ let direction = { x: boxSize, y: 0 };  // 오른쪽으로 이동 시작
 let score = 0;
 let gameRunning = true;
 let snakeHeadImg = new Image();
-snakeHeadImg.src = 'head.png';  // 뱀의 머리 이미지
 let snakeTailImg = new Image();
-snakeTailImg.src = '/mnt/data/file-bcwfDMyBo1xi0ZsgTGg4QlFG';  // 꼬리 이미지 경로 설정
+snakeHeadImg.src = 'head.png';  // 뱀의 머리 이미지
+snakeTailImg.src = '/mnt/data/file-bcwfDMyBo1xi0ZsgTGg4QlFG';  // 업로드된 tail.png 이미지
 let currentAngle = 90;  // 뱀 머리 회전 각도 (오른쪽 방향)
+let tailAngle = 90;  // 꼬리 회전 각도 (오른쪽 방향)
 
 const gameSpeed = 100;  // 게임 속도 (밀리초)
 
@@ -112,42 +113,25 @@ function gameLoop() {
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // 뱀 그리기
         snake.forEach((segment, index) => {
             if (index === 0) {
-                // 머리
                 ctx.save();
                 ctx.translate(segment.x + boxSize / 2, segment.y + boxSize / 2);
                 ctx.rotate((currentAngle * Math.PI) / 180);
                 ctx.drawImage(snakeHeadImg, -boxSize / 2, -boxSize / 2, boxSize, boxSize);
                 ctx.restore();
             } else if (index === snake.length - 1) {
-                // 꼬리
-                const previousSegment = snake[snake.length - 2];
-                const tailDirection = {
-                    x: previousSegment.x - segment.x,
-                    y: previousSegment.y - segment.y
-                };
-                let tailAngle = 0;
-
-                if (tailDirection.x > 0) tailAngle = 90;
-                else if (tailDirection.x < 0) tailAngle = -90;
-                else if (tailDirection.y > 0) tailAngle = 180;
-                else tailAngle = 0;
-
                 ctx.save();
                 ctx.translate(segment.x + boxSize / 2, segment.y + boxSize / 2);
                 ctx.rotate((tailAngle * Math.PI) / 180);
                 ctx.drawImage(snakeTailImg, -boxSize / 2, -boxSize / 2, boxSize, boxSize);
                 ctx.restore();
             } else {
-                // 몸통 (테두리 없음)
                 ctx.fillStyle = "#D52A1E";
                 ctx.fillRect(segment.x, segment.y, boxSize, boxSize);
             }
         });
 
-        // 먹이 그리기
         ctx.fillStyle = "#00FF00";
         ctx.fillRect(food.x, food.y, boxSize, boxSize);
 
