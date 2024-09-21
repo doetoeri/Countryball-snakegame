@@ -1,61 +1,19 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const boxSize = 20;
-let snake = [{ x: 160, y: 160 }, { x: 140, y: 160 }, { x: 120, y: 160 }];  // 뱀의 초기 길이
-let food = { x: Math.floor(Math.random() * (canvas.width / boxSize)) * boxSize, y: Math.floor(Math.random() * (canvas.height / boxSize)) * boxSize };
-let direction = { x: boxSize, y: 0 };  // 오른쪽으로 이동 시작
+let snake = [{ x: 160, y: 160 }, { x: 140, y: 160 }, { x: 120, y: 160 }];
+let food = {
+    x: Math.floor(Math.random() * (canvas.width / boxSize)) * boxSize,
+    y: Math.floor(Math.random() * (canvas.height / boxSize)) * boxSize
+};
+let direction = { x: boxSize, y: 0 };
 let score = 0;
 let gameRunning = true;
 let snakeHeadImg = new Image();
-let snakeTailImg = new Image();
-snakeHeadImg.src = 'head.png';  // 뱀의 머리 이미지
-snakeTailImg.src = '/mnt/data/file-bcwfDMyBo1xi0ZsgTGg4QlFG';  // 업로드된 tail.png 이미지
-let currentAngle = 90;  // 뱀 머리 회전 각도 (오른쪽 방향)
-let tailAngle = 90;  // 꼬리 회전 각도 (오른쪽 방향)
-
-const gameSpeed = 100;  // 게임 속도 (밀리초)
+snakeHeadImg.src = 'head.png';
+let gameSpeed = 100;
 
 document.addEventListener("keydown", changeDirection);
-canvas.addEventListener("touchstart", handleTouchStart);
-canvas.addEventListener("touchmove", handleTouchMove);
-
-let touchStartX = 0;
-let touchStartY = 0;
-
-function handleTouchStart(event) {
-    const touch = event.touches[0];
-    touchStartX = touch.clientX;
-    touchStartY = touch.clientY;
-}
-
-function handleTouchMove(event) {
-    if (!gameRunning) return;
-    
-    const touch = event.touches[0];
-    const dx = touch.clientX - touchStartX;
-    const dy = touch.clientY - touchStartY;
-
-    if (Math.abs(dx) > Math.abs(dy)) {
-        if (dx > 0 && direction.x === 0) {
-            direction = { x: boxSize, y: 0 };  // 오른쪽
-            currentAngle = 90;
-        } else if (dx < 0 && direction.x === 0) {
-            direction = { x: -boxSize, y: 0 };  // 왼쪽
-            currentAngle = -90;
-        }
-    } else {
-        if (dy > 0 && direction.y === 0) {
-            direction = { x: 0, y: boxSize };  // 아래
-            currentAngle = 180;
-        } else if (dy < 0 && direction.y === 0) {
-            direction = { x: 0, y: -boxSize };  // 위
-            currentAngle = 0;
-        }
-    }
-
-    touchStartX = touch.clientX;
-    touchStartY = touch.clientY;
-}
 
 function changeDirection(event) {
     const keyPressed = event.key;
@@ -66,16 +24,21 @@ function changeDirection(event) {
 
     if (keyPressed === 'ArrowUp' && !goingDown) {
         direction = { x: 0, y: -boxSize };
-        currentAngle = 0;
     } else if (keyPressed === 'ArrowDown' && !goingUp) {
         direction = { x: 0, y: boxSize };
-        currentAngle = 180;
     } else if (keyPressed === 'ArrowLeft' && !goingRight) {
         direction = { x: -boxSize, y: 0 };
-        currentAngle = -90;
     } else if (keyPressed === 'ArrowRight' && !goingLeft) {
         direction = { x: boxSize, y: 0 };
-        currentAngle = 90;
+    }
+}
+
+function drawGrid() {
+    ctx.strokeStyle = "rgba(200, 200, 200, 0.5)";
+    for (let x = 0; x < canvas.width; x += boxSize) {
+        for (let y = 0; y < canvas.height; y += boxSize) {
+            ctx.strokeRect(x, y, boxSize, boxSize);
+        }
     }
 }
 
@@ -85,19 +48,19 @@ function gameLoop() {
     setTimeout(function onTick() {
         const newHead = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
 
-        if (
-            newHead.x < 0 ||
-            newHead.y < 0 ||
-            newHead.x >= canvas.width ||
-            newHead.y >= canvas.height ||
-            snake.some(segment => segment.x === newHead.x && segment.y === newHead.y)
-        ) {
-            gameRunning = false;
-            alert("Game Over! Your Score: " + score);
-            document.location.reload();
+        // 캔버스의 경계를 넘어가면 반대편에서 나오도록 처리
+        if (newHead.x < 0) newHead.x = canvas.width - boxSize;
+        else if (newHead.x >= canvas.width) newHead.x = 0;
+        if (newHead.y < 0) newHead.y = canvas.height - boxSize;
+        else if (newHead.y >= canvas.height) newHead.y = 0;
+
+        // 자기 자신과 충돌하면 게임 오버
+        if (snake.some(segment => segment.x === newHead.x && segment.y === newHead.y)) {
+            gameOver();
             return;
         }
 
+        // 먹이를 먹으면 점수 증가
         if (newHead.x === food.x && newHead.y === food.y) {
             score++;
             document.getElementById("score").innerText = "Score: " + score;
@@ -111,4 +74,82 @@ function gameLoop() {
 
         snake.unshift(newHead);
 
-        ctx.clearRect(0
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawGrid();
+
+        // 뱀의 몸체 그리기 (검정색 테두리는 그리지 않음)
+        snake.forEach((segment, index) => {
+            ctx.fillStyle = "#D52A1E";
+            ctx.fillRect(segment.x, segment.y, boxSize, boxSize);
+            if (index === 0) {
+                ctx.save();
+                ctx.translate(segment.x + boxSize / 2, segment.y + boxSize / 2);
+                const headAngle = Math.atan2(direction.y, direction.x);
+                ctx.rotate(headAngle);
+                ctx.drawImage(snakeHeadImg, -boxSize / 2, -boxSize / 2, boxSize, boxSize);
+                ctx.restore();
+            }
+        });
+
+        // 마지막 세그먼트 (캡슐 모양)
+        const tailSegment = snake[snake.length - 1];
+        const prevSegment = snake[snake.length - 2];
+        const tailDirection = { x: prevSegment.x - tailSegment.x, y: prevSegment.y - tailSegment.y };
+        let tailAngle = 0;
+        if (tailDirection.x > 0) tailAngle = Math.PI;
+        else if (tailDirection.x < 0) tailAngle = 0;
+        else if (tailDirection.y > 0) tailAngle = Math.PI / 2;
+        else if (tailDirection.y < 0) tailAngle = -Math.PI / 2;
+
+        ctx.save();
+        ctx.translate(tailSegment.x + boxSize / 2, tailSegment.y + boxSize / 2);
+        ctx.rotate(tailAngle);
+        ctx.beginPath();
+        ctx.moveTo(-boxSize / 2, -boxSize / 2);
+        ctx.arc(boxSize / 2, 0, boxSize / 2, Math.PI / 2, -Math.PI / 2, true);
+        ctx.lineTo(-boxSize / 2, boxSize / 2);
+        ctx.arc(-boxSize / 2, 0, boxSize / 2, -Math.PI / 2, Math.PI / 2, true);
+        ctx.fillStyle = "#D52A1E";
+        ctx.fill();
+        ctx.restore();
+
+        // 먹이 그리기
+        ctx.fillStyle = "#00FF00";
+        ctx.fillRect(food.x, food.y, boxSize, boxSize);
+
+        gameLoop();
+    }, gameSpeed);
+}
+
+function gameOver() {
+    gameRunning = false;
+    document.getElementById("retryBtn").style.display = "block";
+    const nickname = document.getElementById("nicknameInput").value || "Anonymous";
+    const scoreData = {
+        nickname: nickname,
+        score: score,
+        date: new Date().toLocaleString()
+    };
+    // 서버로 스코어 전송
+    fetch("/save-score", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(scoreData)
+    }).then(response => response.json())
+    .then(data => {
+        console.log("Score saved:", data);
+    });
+}
+
+function restartGame() {
+    document.getElementById("retryBtn").style.display = "none";
+    score = 0;
+    direction = { x: boxSize, y: 0 };
+    snake = [{ x: 160, y: 160 }, { x: 140, y: 160 }, { x: 120, y: 160 }];
+    gameRunning = true;
+    gameLoop();
+}
+
+gameLoop();
