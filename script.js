@@ -14,10 +14,10 @@ let gameSpeed = 100;
 
 // Firebase 설정
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    apiKey: "AIzaSyChpxqaPXsbMDhXOKsLk0l9BVtq4_g1XW8",
+    authDomain: "chilesnakegame.firebaseapp.com",
+    projectId: "chilesnakegame",
+    storageBucket: "chilesnakegame.appspot.com",
     messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
     appId: "YOUR_APP_ID"
 };
