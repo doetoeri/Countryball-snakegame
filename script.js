@@ -9,7 +9,7 @@ let food = {
 };
 let direction = { x: boxSize, y: 0 };
 let score = 0;
-let gameRunning = true;
+let gameRunning = false;  // 게임은 닉네임 입력 후에만 시작
 let gameSpeed = 100;
 
 // Firebase 설정
@@ -40,6 +40,21 @@ function saveScore(nickname, score) {
         console.error("Error adding document: ", error);
     });
 }
+
+// 닉네임 입력 시 게임 시작
+const nicknameInput = document.getElementById("nicknameInput");
+nicknameInput.addEventListener("keydown", function(event) {
+    if (event.key === 'Enter') {
+        const nickname = nicknameInput.value.trim();
+        if (nickname !== "") {
+            gameRunning = true;
+            nicknameInput.disabled = true;  // 입력 후 닉네임 입력 비활성화
+            gameLoop();
+        } else {
+            alert("Please enter a nickname.");
+        }
+    }
+});
 
 // 방향 전환 이벤트
 document.addEventListener("keydown", changeDirection);
@@ -174,5 +189,11 @@ function restartGame() {
     document.location.reload();
 }
 
-// 게임 시작
-gameLoop();
+// Firebase 점수 저장 로직
+function saveScore(nickname, score) {
+    db.collection("scores").add({
+        nickname: nickname,
+        score: score,
+        date: new Date().toLocaleString()
+    });
+}
