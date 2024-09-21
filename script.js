@@ -114,18 +114,24 @@ function gameLoop() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawGrid();
 
-        // 뱀의 머리 그리기
+        // 뱀의 몸체와 머리 그리기
         snake.forEach((segment, index) => {
+            ctx.fillStyle = "#D52A1E";
+            ctx.fillRect(segment.x, segment.y, boxSize, boxSize);
+            
+            // 검정색 테두리 그리기
+            ctx.strokeStyle = "#000000";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(segment.x, segment.y, boxSize, boxSize);
+
             if (index === 0) {
+                // 뱀 머리 그리기
                 ctx.save();
                 ctx.translate(segment.x + boxSize / 2, segment.y + boxSize / 2);
                 const headAngle = Math.atan2(direction.y, direction.x);
                 ctx.rotate(headAngle);
                 ctx.drawImage(snakeHeadImg, -boxSize / 2, -boxSize / 2, boxSize, boxSize);
                 ctx.restore();
-            } else {
-                ctx.fillStyle = "#D52A1E";
-                ctx.fillRect(segment.x, segment.y, boxSize, boxSize);
             }
         });
 
@@ -156,6 +162,9 @@ function gameLoop() {
         ctx.arc(-boxSize / 2, 0, boxSize / 2, -Math.PI / 2, Math.PI / 2, true);
         ctx.fillStyle = "#D52A1E";
         ctx.fill();
+        ctx.strokeStyle = "#000000"; // 검정색 테두리
+        ctx.lineWidth = 2;
+        ctx.stroke();
         ctx.restore();
 
         // 먹이 그리기
