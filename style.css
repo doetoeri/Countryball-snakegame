@@ -15,6 +15,10 @@ body {
 
 .container {
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;  /* 세로 방향 정렬 */
+    justify-content: center;
 }
 
 h1 {
@@ -23,8 +27,43 @@ h1 {
 
 #gameCanvas {
     background-color: #fafafa;
-    display: block;
-    margin: 0 auto;
+    border: 2px solid black;
+}
+
+#score {
+    margin-top: 20px;
+    font-size: 20px;
+    color: #333;
+}* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f0f0;
+    font-family: 'Arial', sans-serif;
+}
+
+.container {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;  /* 세로 방향 정렬 */
+    justify-content: center;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+#gameCanvas {
+    background-color: #fafafa;
+    border: 2px solid black;
 }
 
 #score {
