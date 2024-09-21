@@ -11,7 +11,7 @@ let score = 0;
 let gameRunning = true;
 let snakeHeadImg = new Image();
 snakeHeadImg.src = 'head.png';
-const snakeColor = "#D52A1E";  // 뱀 색상
+let tailAngle = 0;  // D 세그먼트의 각도
 
 const gameSpeed = 100;
 
@@ -124,34 +124,39 @@ function gameLoop() {
                 ctx.drawImage(snakeHeadImg, -boxSize / 2, -boxSize / 2, boxSize, boxSize);
                 ctx.restore();
             } else {
-                // 뱀의 몸통 그리기
-                ctx.fillStyle = snakeColor;
+                ctx.fillStyle = "#D52A1E";
                 ctx.fillRect(segment.x, segment.y, boxSize, boxSize);
             }
         });
 
-        // 뱀의 꼬리 그리기 (끝을 둥글게 처리)
+        // D 세그먼트 그리기
         const tailSegment = snake[snake.length - 1];
         const prevSegment = snake[snake.length - 2];
         const tailDirection = { x: prevSegment.x - tailSegment.x, y: prevSegment.y - tailSegment.y };
 
-        ctx.fillStyle = snakeColor;
-        ctx.beginPath();
-        ctx.moveTo(tailSegment.x, tailSegment.y);
-
-        // 꼬리 끝을 둥글게 만들기 위한 경로 설정
-        if (tailDirection.x > 0) { // 왼쪽으로 향할 때
-            ctx.arc(tailSegment.x + boxSize, tailSegment.y + boxSize / 2, boxSize / 2, -Math.PI / 2, Math.PI / 2, false);
-        } else if (tailDirection.x < 0) { // 오른쪽으로 향할 때
-            ctx.arc(tailSegment.x, tailSegment.y + boxSize / 2, boxSize / 2, Math.PI / 2, -Math.PI / 2, false);
-        } else if (tailDirection.y > 0) { // 위로 향할 때
-            ctx.arc(tailSegment.x + boxSize / 2, tailSegment.y + boxSize, boxSize / 2, 0, Math.PI, false);
-        } else if (tailDirection.y < 0) { // 아래로 향할 때
-            ctx.arc(tailSegment.x + boxSize / 2, tailSegment.y, boxSize / 2, Math.PI, 0, false);
+        // D 세그먼트 각도 설정
+        if (tailDirection.x > 0) {  // 오른쪽으로 연결될 때
+            tailAngle = Math.PI;  // 180도
+        } else if (tailDirection.x < 0) {  // 왼쪽으로 연결될 때
+            tailAngle = 0;  // 0도
+        } else if (tailDirection.y > 0) {  // 위로 연결될 때
+            tailAngle = Math.PI / 2;  // 90도 (시계방향)
+        } else if (tailDirection.y < 0) {  // 아래로 연결될 때
+            tailAngle = -Math.PI / 2;  // -90도 (반시계방향)
         }
 
-        ctx.lineTo(tailSegment.x + boxSize, tailSegment.y);
+        // D 세그먼트 그리기 (둥근 캡슐 모양)
+        ctx.save();
+        ctx.translate(tailSegment.x + boxSize / 2, tailSegment.y + boxSize / 2);
+        ctx.rotate(tailAngle);
+        ctx.beginPath();
+        ctx.moveTo(-boxSize / 2, -boxSize / 2);
+        ctx.arc(boxSize / 2, 0, boxSize / 2, Math.PI / 2, -Math.PI / 2, true);
+        ctx.lineTo(-boxSize / 2, boxSize / 2);
+        ctx.arc(-boxSize / 2, 0, boxSize / 2, -Math.PI / 2, Math.PI / 2, true);
+        ctx.fillStyle = "#D52A1E";
         ctx.fill();
+        ctx.restore();
 
         // 먹이 그리기
         ctx.fillStyle = "#00FF00";
