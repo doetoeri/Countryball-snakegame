@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chileball Snake Game</title>
+    <title>Snake Game</title>
     <style>
         canvas {
             border: 1px solid black;
@@ -12,20 +12,24 @@
             display: none;
             margin-top: 20px;
         }
+        #nicknameInput {
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+        #score {
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
     <h1>Chileball Snake Game</h1>
-    <input type="text" id="nicknameInput" placeholder="Enter your nickname">
+    <input type="text" id="nicknameInput" placeholder="Enter your nickname and press Enter">
     <canvas id="gameCanvas" width="400" height="400"></canvas>
     <p id="score">Score: 0</p>
     <button id="retryBtn" onclick="restartGame()">다시하기</button>
 
-    <!-- Firebase SDK -->
+    <script src="script.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-firestore.js"></script>
-
-    <!-- 게임 스크립트 -->
-    <script src="script.js"></script>
 </body>
 </html>
