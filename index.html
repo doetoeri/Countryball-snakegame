@@ -1,19 +1,26 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google-adsense-account" content="ca-pub-8017235617839629">
-    <title>Chile Snake Game!</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Snake Game</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+        }
+        #retryBtn {
+            display: none;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Chile Snake Game!</h1>
-        <h2>made by 도0, Country ball channel</h2>
-        <canvas id="gameCanvas" width="400" height="400"></canvas>
-        <p id="score">Score: 0</p>
-    </div>
+    <h1>Chileball Snake Game</h1>
+    <input type="text" id="nicknameInput" placeholder="Enter your nickname">
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <p id="score">Score: 0</p>
+    <button id="retryBtn" onclick="restartGame()">다시하기</button>
+
     <script src="script.js"></script>
 </body>
 </html>
