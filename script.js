@@ -124,32 +124,36 @@ function gameLoop() {
                 ctx.drawImage(snakeHeadImg, -boxSize / 2, -boxSize / 2, boxSize, boxSize);
                 ctx.restore();
             } else {
+                // 뱀의 몸통 그리기
                 ctx.fillStyle = snakeColor;
                 ctx.fillRect(segment.x, segment.y, boxSize, boxSize);
             }
         });
 
-        // 뱀의 꼬리 그리기 (대문자 'D' 모양)
+        // 뱀의 꼬리 그리기 (끝을 둥글게 처리)
         const tailSegment = snake[snake.length - 1];
         const prevSegment = snake[snake.length - 2];
         const tailDirection = { x: prevSegment.x - tailSegment.x, y: prevSegment.y - tailSegment.y };
-        const tailAngle = Math.atan2(tailDirection.y, tailDirection.x) - Math.PI;  // 180도 회전
 
         ctx.fillStyle = snakeColor;
         ctx.beginPath();
-        ctx.moveTo(tailSegment.x + boxSize, tailSegment.y);
-        ctx.arc(tailSegment.x + boxSize, tailSegment.y + boxSize / 2, boxSize / 2, -Math.PI / 2, Math.PI / 2, false);
-        ctx.lineTo(tailSegment.x, tailSegment.y + boxSize);
-        ctx.lineTo(tailSegment.x, tailSegment.y);
+        ctx.moveTo(tailSegment.x, tailSegment.y);
+
+        // 꼬리 끝을 둥글게 만들기 위한 경로 설정
+        if (tailDirection.x > 0) { // 왼쪽으로 향할 때
+            ctx.arc(tailSegment.x + boxSize, tailSegment.y + boxSize / 2, boxSize / 2, -Math.PI / 2, Math.PI / 2, false);
+        } else if (tailDirection.x < 0) { // 오른쪽으로 향할 때
+            ctx.arc(tailSegment.x, tailSegment.y + boxSize / 2, boxSize / 2, Math.PI / 2, -Math.PI / 2, false);
+        } else if (tailDirection.y > 0) { // 위로 향할 때
+            ctx.arc(tailSegment.x + boxSize / 2, tailSegment.y + boxSize, boxSize / 2, 0, Math.PI, false);
+        } else if (tailDirection.y < 0) { // 아래로 향할 때
+            ctx.arc(tailSegment.x + boxSize / 2, tailSegment.y, boxSize / 2, Math.PI, 0, false);
+        }
+
+        ctx.lineTo(tailSegment.x + boxSize, tailSegment.y);
         ctx.fill();
 
-        // 꼬리 회전 적용
-        ctx.save();
-        ctx.translate(tailSegment.x + boxSize / 2, tailSegment.y + boxSize / 2);
-        ctx.rotate(tailAngle);
-        ctx.fill();
-        ctx.restore();
-
+        // 먹이 그리기
         ctx.fillStyle = "#00FF00";
         ctx.fillRect(food.x, food.y, boxSize, boxSize);
 
