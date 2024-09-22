@@ -4,19 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Snake Game</title>
-    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <script type="importmap">
+      {
+        "imports": {
+          "@material/web/": "https://esm.run/@material/web/"
+        }
+      }
+    </script>
+    <script type="module">
+      import '@material/web/all.js';
+      import { styles as typescaleStyles } from '@material/web/typography/md-typescale-styles.js';
+
+      document.adoptedStyleSheets.push(typescaleStyles.styleSheet);
+    </script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+        }
+        #gameCanvas {
+            background-color: #fafafa;
+            display: block;
+            margin: 20px auto;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Snake Game</h1>
-        <canvas id="gameCanvas" width="400" height="400"></canvas>
-        <p id="score">Score: 0</p>
-        <button id="restartButton" style="display: none;" onclick="resetGame()">다시 하기</button>
-        <div id="gameOver" style="display: none; text-align: center;">
-            <h2>게임 오버</h2>
-            <button onclick="resetGame()">다시 하기</button>
-        </div>
-    </div>
+    <h1 class="md-typescale-display-medium">Snake Game</h1>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <p id="score" class="md-typescale-body-medium">Score: 0</p>
+    <md-filled-button id="restartBtn" style="display: none;">다시 하기</md-filled-button>
+
     <script src="script.js"></script>
 </body>
 </html>
