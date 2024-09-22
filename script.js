@@ -106,12 +106,25 @@ function saveScore(nickname, score) {
 function gameOver() {
     gameRunning = false;
     document.getElementById("gameOver").style.display = "block"; // 게임 오버 메시지 표시
-    const nickname = prompt("닉네임을 입력하세요:");
-    if (nickname) {
-        saveScore(nickname, score);
-    }
+    document.getElementById("nicknameInput").style.display = "block"; // 닉네임 입력란 표시
 }
 
+function restartGame() {
+    // 초기화
+    snake = [{ x: 160, y: 160 }, { x: 140, y: 160 }, { x: 120, y: 160 }];
+    direction = { x: boxSize, y: 0 };
+    score = 0;
+    gameRunning = true;
+    food = { x: Math.floor(Math.random() * (canvas.width / boxSize)) * boxSize, y: Math.floor(Math.random() * (canvas.height / boxSize)) * boxSize };
+
+    document.getElementById("score").innerText = "Score: " + score;
+    document.getElementById("gameOver").style.display = "none"; // 게임 오버 메시지 숨기기
+    document.getElementById("nicknameInput").style.display = "none"; // 닉네임 입력란 숨기기
+
+    gameLoop(); // 게임 루프 시작
+}
+
+// 게임 루프
 function gameLoop() {
     if (!gameRunning) return;
 
