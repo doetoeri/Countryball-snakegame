@@ -1,4 +1,3 @@
-// 게임 관련 변수 설정
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const boxSize = 20;
@@ -9,57 +8,17 @@ let food = {
 };
 let direction = { x: boxSize, y: 0 };
 let score = 0;
-let gameRunning = false;  // 게임은 닉네임 입력 후에만 시작
-let gameSpeed = 100;
+let gameRunning = true;
+let snakeHeadImg = new Image();
+snakeHeadImg.src = 'head.png';
+let tailAngle = 0;  // D 세그먼트의 각도
+const gameSpeed = 100;
 
-// Firebase 설정
-const firebaseConfig = {
-    apiKey: "AIzaSyChpxqaPXsbMDhXOKsLk0l9BVtq4_g1XW8",
-    authDomain: "chilesnakegame.firebaseapp.com",
-    projectId: "chilesnakegame",
-    storageBucket: "chilesnakegame.appspot.com",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
-};
+// 다시하기 버튼 생성
+const restartButton = document.getElementById("restartButton");
+restartButton.style.display = "none";  // 처음엔 버튼 숨김
 
-// Firebase 초기화
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
-// 점수 저장 함수
-function saveScore(nickname, score) {
-    db.collection("scores").add({
-        nickname: nickname,
-        score: score,
-        date: new Date().toLocaleString()
-    })
-    .then((docRef) => {
-        console.log("Document written with ID: ", docRef.id);
-    })
-    .catch((error) => {
-        console.error("Error adding document: ", error);
-    });
-}
-
-// 닉네임 입력 시 게임 시작
-const nicknameInput = document.getElementById("nicknameInput");
-nicknameInput.addEventListener("keydown", function(event) {
-    if (event.key === 'Enter') {
-        const nickname = nicknameInput.value.trim();
-        if (nickname !== "") {
-            gameRunning = true;
-            nicknameInput.disabled = true;  // 입력 후 닉네임 입력 비활성화
-            gameLoop();
-        } else {
-            alert("Please enter a nickname.");
-        }
-    }
-});
-
-// 방향 전환 이벤트
 document.addEventListener("keydown", changeDirection);
-
-// 터치 이벤트 처리 (모바일 지원)
 canvas.addEventListener("touchstart", handleTouchStart);
 canvas.addEventListener("touchmove", handleTouchMove);
 
@@ -115,7 +74,6 @@ function changeDirection(event) {
     }
 }
 
-// 그리드 라인 그리기
 function drawGrid() {
     ctx.strokeStyle = "rgba(200, 200, 200, 0.5)";
     for (let x = 0; x < canvas.width; x += boxSize) {
@@ -125,21 +83,20 @@ function drawGrid() {
     }
 }
 
-// 게임 루프
 function gameLoop() {
     if (!gameRunning) return;
 
     setTimeout(function onTick() {
         const newHead = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
 
-        // 벽 충돌 시 반대편으로 이동
-        if (newHead.x >= canvas.width) newHead.x = 0;
-        else if (newHead.x < 0) newHead.x = canvas.width - boxSize;
+        if (newHead.x < 0) newHead.x = canvas.width - boxSize;
+        else if (newHead.x >= canvas.width) newHead.x = 0;
+        if (newHead.y < 0) newHead.y = canvas.height - boxSize;
         else if (newHead.y >= canvas.height) newHead.y = 0;
-        else if (newHead.y < 0) newHead.y = canvas.height - boxSize;
 
         if (snake.some(segment => segment.x === newHead.x && segment.y === newHead.y)) {
-            gameOver();
+            gameRunning = false;
+            restartButton.style.display = "block";  // 게임 종료 후 다시하기 버튼 표시
             return;
         }
 
@@ -159,41 +116,71 @@ function gameLoop() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawGrid();
 
-        snake.forEach((segment) => {
+        // 뱀의 몸체와 머리 그리기
+        snake.forEach((segment, index) => {
             ctx.fillStyle = "#D52A1E";
             ctx.fillRect(segment.x, segment.y, boxSize, boxSize);
-            ctx.strokeStyle = "black";
-            ctx.strokeRect(segment.x, segment.y, boxSize, boxSize);
+
+            // 세그먼트 외곽선 그리기, 세그먼트 사이의 테두리 제거
+            if (index === 0) {
+                ctx.strokeStyle = "#000000";
+                ctx.lineWidth = 2;
+                ctx.strokeRect(segment.x, segment.y, boxSize, boxSize);
+            }
+
+            if (index === 0) {
+                // 뱀 머리 그리기
+                ctx.save();
+                ctx.translate(segment.x + boxSize / 2, segment.y + boxSize / 2);
+                const headAngle = Math.atan2(direction.y, direction.x);
+                ctx.rotate(headAngle);
+                ctx.drawImage(snakeHeadImg, -boxSize / 2, -boxSize / 2, boxSize, boxSize);
+                ctx.restore();
+            }
         });
 
+        // D 세그먼트 그리기
+        const tailSegment = snake[snake.length - 1];
+        const prevSegment = snake[snake.length - 2];
+        const tailDirection = { x: prevSegment.x - tailSegment.x, y: prevSegment.y - tailSegment.y };
+
+        // D 세그먼트 각도 설정
+        if (tailDirection.x > 0) {  // 오른쪽으로 연결될 때
+            tailAngle = Math.PI;  // 180도
+        } else if (tailDirection.x < 0) {  // 왼쪽으로 연결될 때
+            tailAngle = 0;  // 0도
+        } else if (tailDirection.y > 0) {  // 위로 연결될 때
+            tailAngle = Math.PI / 2;  // 90도 (시계방향)
+        } else if (tailDirection.y < 0) {  // 아래로 연결될 때
+            tailAngle = -Math.PI / 2;  // -90도 (반시계방향)
+        }
+
+        // D 세그먼트 그리기 (둥근 캡슐 모양)
+        ctx.save();
+        ctx.translate(tailSegment.x + boxSize / 2, tailSegment.y + boxSize / 2);
+        ctx.rotate(tailAngle);
+        ctx.beginPath();
+        ctx.moveTo(-boxSize / 2, -boxSize / 2);
+        ctx.arc(boxSize / 2, 0, boxSize / 2, Math.PI / 2, -Math.PI / 2, true);
+        ctx.lineTo(-boxSize / 2, boxSize / 2);
+        ctx.arc(-boxSize / 2, 0, boxSize / 2, -Math.PI / 2, Math.PI / 2, true);
+        ctx.fillStyle = "#D52A1E";
+        ctx.fill();
+        ctx.restore();
+
+        // 먹이 그리기
         ctx.fillStyle = "#00FF00";
         ctx.fillRect(food.x, food.y, boxSize, boxSize);
 
         gameLoop();
+
     }, gameSpeed);
 }
 
-// 게임 오버 함수
-function gameOver() {
-    gameRunning = false;
-    document.getElementById("retryBtn").style.display = "block";
-
-    const nickname = document.getElementById("nicknameInput").value || "Anonymous";
-    saveScore(nickname, score);  // Firebase에 점수 저장
-
-    alert("Game Over! Your Score: " + score);
-}
-
-// 게임 재시작 함수
-function restartGame() {
-    document.location.reload();
-}
-
-// Firebase 점수 저장 로직
-function saveScore(nickname, score) {
-    db.collection("scores").add({
-        nickname: nickname,
-        score: score,
-        date: new Date().toLocaleString()
-    });
-}
+// 다시하기 버튼 클릭 시 게임 리셋
+restartButton.addEventListener("click", function () {
+    score = 0;
+    snake = [{ x: 160, y: 160 }, { x: 140, y: 160 }, { x: 120, y: 160 }];
+    direction = { x: boxSize, y: 0 };
+    food = {
+        x: Math.floor(Math.random() * (canvas.width / boxSize))
