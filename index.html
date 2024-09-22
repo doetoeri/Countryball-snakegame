@@ -4,32 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Snake Game</title>
-    <style>
-        canvas {
-            border: 1px solid black;
-        }
-        #retryBtn {
-            display: none;
-            margin-top: 20px;
-        }
-        #nicknameInput {
-            margin-top: 10px;
-            margin-bottom: 20px;
-        }
-        #score {
-            font-weight: bold;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Chileball Snake Game</h1>
-    <input type="text" id="nicknameInput" placeholder="Enter your nickname and press Enter">
+    <div id="score">Score: 0</div>
     <canvas id="gameCanvas" width="400" height="400"></canvas>
-    <p id="score">Score: 0</p>
-    <button id="retryBtn" onclick="restartGame()">다시하기</button>
+    <button id="restartButton">Restart Game</button>
 
     <script src="script.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js"></script>
 </body>
 </html>
