@@ -11,12 +11,9 @@ let score = 0;
 let gameRunning = true;
 let snakeHeadImg = new Image();
 snakeHeadImg.src = 'head.png';
-let tailAngle = 0;  // D 세그먼트의 각도
-const gameSpeed = 100;
+let tailAngle = 0;
 
-// 다시하기 버튼 생성
-const restartButton = document.getElementById("restartButton");
-restartButton.style.display = "none";  // 처음엔 버튼 숨김
+const gameSpeed = 100;
 
 document.addEventListener("keydown", changeDirection);
 canvas.addEventListener("touchstart", handleTouchStart);
@@ -83,6 +80,19 @@ function drawGrid() {
     }
 }
 
+function resetGame() {
+    snake = [{ x: 160, y: 160 }, { x: 140, y: 160 }, { x: 120, y: 160 }];
+    food = {
+        x: Math.floor(Math.random() * (canvas.width / boxSize)) * boxSize,
+        y: Math.floor(Math.random() * (canvas.height / boxSize)) * boxSize
+    };
+    direction = { x: boxSize, y: 0 };
+    score = 0;
+    gameRunning = true;
+    document.getElementById("score").innerText = "Score: 0";
+    gameLoop();
+}
+
 function gameLoop() {
     if (!gameRunning) return;
 
@@ -96,7 +106,7 @@ function gameLoop() {
 
         if (snake.some(segment => segment.x === newHead.x && segment.y === newHead.y)) {
             gameRunning = false;
-            restartButton.style.display = "block";  // 게임 종료 후 다시하기 버튼 표시
+            document.getElementById("gameOver").style.display = "block"; // 게임 오버 메시지 표시
             return;
         }
 
@@ -112,24 +122,14 @@ function gameLoop() {
         }
 
         snake.unshift(newHead);
-
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawGrid();
 
-        // 뱀의 몸체와 머리 그리기
         snake.forEach((segment, index) => {
             ctx.fillStyle = "#D52A1E";
             ctx.fillRect(segment.x, segment.y, boxSize, boxSize);
 
-            // 세그먼트 외곽선 그리기, 세그먼트 사이의 테두리 제거
             if (index === 0) {
-                ctx.strokeStyle = "#000000";
-                ctx.lineWidth = 2;
-                ctx.strokeRect(segment.x, segment.y, boxSize, boxSize);
-            }
-
-            if (index === 0) {
-                // 뱀 머리 그리기
                 ctx.save();
                 ctx.translate(segment.x + boxSize / 2, segment.y + boxSize / 2);
                 const headAngle = Math.atan2(direction.y, direction.x);
@@ -139,23 +139,20 @@ function gameLoop() {
             }
         });
 
-        // D 세그먼트 그리기
         const tailSegment = snake[snake.length - 1];
         const prevSegment = snake[snake.length - 2];
         const tailDirection = { x: prevSegment.x - tailSegment.x, y: prevSegment.y - tailSegment.y };
 
-        // D 세그먼트 각도 설정
-        if (tailDirection.x > 0) {  // 오른쪽으로 연결될 때
-            tailAngle = Math.PI;  // 180도
-        } else if (tailDirection.x < 0) {  // 왼쪽으로 연결될 때
-            tailAngle = 0;  // 0도
-        } else if (tailDirection.y > 0) {  // 위로 연결될 때
-            tailAngle = Math.PI / 2;  // 90도 (시계방향)
-        } else if (tailDirection.y < 0) {  // 아래로 연결될 때
-            tailAngle = -Math.PI / 2;  // -90도 (반시계방향)
+        if (tailDirection.x > 0) {
+            tailAngle = Math.PI;
+        } else if (tailDirection.x < 0) {
+            tailAngle = 0;
+        } else if (tailDirection.y > 0) {
+            tailAngle = Math.PI / 2;
+        } else if (tailDirection.y < 0) {
+            tailAngle = -Math.PI / 2;
         }
 
-        // D 세그먼트 그리기 (둥근 캡슐 모양)
         ctx.save();
         ctx.translate(tailSegment.x + boxSize / 2, tailSegment.y + boxSize / 2);
         ctx.rotate(tailAngle);
@@ -168,7 +165,6 @@ function gameLoop() {
         ctx.fill();
         ctx.restore();
 
-        // 먹이 그리기
         ctx.fillStyle = "#00FF00";
         ctx.fillRect(food.x, food.y, boxSize, boxSize);
 
@@ -177,10 +173,4 @@ function gameLoop() {
     }, gameSpeed);
 }
 
-// 다시하기 버튼 클릭 시 게임 리셋
-restartButton.addEventListener("click", function () {
-    score = 0;
-    snake = [{ x: 160, y: 160 }, { x: 140, y: 160 }, { x: 120, y: 160 }];
-    direction = { x: boxSize, y: 0 };
-    food = {
-        x: Math.floor(Math.random() * (canvas.width / boxSize))
+gameLoop();
